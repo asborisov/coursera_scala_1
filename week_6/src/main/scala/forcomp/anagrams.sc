@@ -1,9 +1,22 @@
-import forcomp.Anagrams.{Occurrences, Word, combinations, dictionary, wordOccurrences}
+import forcomp.Anagrams._
 
-val occurrences: Occurrences = wordOccurrences("kokok")
+val sentence: Sentence = List("Ye", "ma")
+def loop(occurrences: Occurrences): List[Sentence] = {
+  if (occurrences.isEmpty) Nil
+  else {
+    val words = combinations(occurrences).flatMap(wordAnagrams)
+    if (words.isEmpty) List()
+    else words
+        .flatMap(word => {
+          // chars are left
+          val rest = subtract(occurrences, wordOccurrences(word))
+          // sentences can be created with rest chars
+          val restSent: List[Sentence] = loop(rest)
+          // add current word for each sentence
+          restSent.map(s => word :: s)
+        })
+  }
+}
 
-occurrences.flatMap(p => for (n <- 1 to p._2) yield (p._1, n))
-  .toSet[(Char, Int)].subsets
-  .filter(p => p.groupBy(l => l._1).forall(p => p._2.size == 1))
-  .map(_.toList.sortBy(_._1))
-  .toList.size
+val sOccurrences = sentenceOccurrences(sentence)
+loop(sOccurrences) //.filter(s => s.forall(w => !w.contains("#")))
