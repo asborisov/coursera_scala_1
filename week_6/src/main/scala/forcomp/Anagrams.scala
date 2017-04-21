@@ -88,8 +88,8 @@ object Anagrams {
   def combinations(occurrences: Occurrences): List[Occurrences] = {
     occurrences.flatMap(p => for (n <- 1 to p._2) yield (p._1, n))
       .toSet[(Char, Int)].subsets
-      .filter(_.groupBy(_._1).forall(_._2.size == 1))
-      .map(_.toList).toList
+      .filter(p => p.groupBy(l => l._1).forall(p => p._2.size == 1))
+      .map(_.toList.sortBy(_._1)).toList
   }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.

@@ -1,8 +1,9 @@
 import forcomp.Anagrams.{Occurrences, Word, combinations, dictionary, wordOccurrences}
-import forcomp.loadDictionary
 
-import scala.annotation.tailrec
+val occurrences: Occurrences = wordOccurrences("kokok")
 
-val occurrences: Occurrences = wordOccurrences("koko")
-
-combinations(occurrences)
+occurrences.flatMap(p => for (n <- 1 to p._2) yield (p._1, n))
+  .toSet[(Char, Int)].subsets
+  .filter(p => p.groupBy(l => l._1).forall(p => p._2.size == 1))
+  .map(_.toList.sortBy(_._1))
+  .toList.size
