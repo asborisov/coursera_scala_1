@@ -1,7 +1,5 @@
 package forcomp
 
-import scala.annotation.tailrec
-
 object Anagrams {
 
   /** A word is simply a `String`. */
@@ -62,6 +60,9 @@ object Anagrams {
   /** Returns all the anagrams of a given word. */
   def wordAnagrams(word: Word): List[Word] =
     dictionaryByOccurrences(wordOccurrences(word))
+
+  def wordAnagrams(occurrences: Occurrences): List[Word] =
+    dictionaryByOccurrences(occurrences)
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -147,10 +148,16 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
-//  {
-//    if (sentence.isEmpty) List()
-//    else
-//
-//  }
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    def loop(occurrences: Occurrences): List[Sentence] = {
+      if (occurrences.isEmpty) List(List())
+      else combinations(occurrences).flatMap(wordAnagrams) match {
+        case words => words.flatMap(word => loop(subtract(occurrences, wordOccurrences(word))).map(word :: _))
+        case _ => List()
+      }
+    }
+
+    val sOccurrences = sentenceOccurrences(sentence)
+    loop(sOccurrences)
+  }
 }
